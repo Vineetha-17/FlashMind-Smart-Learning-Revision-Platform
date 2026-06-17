@@ -1,15 +1,13 @@
 ## FlashMind – Smart Learning & Revision Platform
 
-## Team Name
-**LearnLoop**
+# Team LearnLoop
 
 ## Team Members
 
-- P. Vineetha – :contentReference[oaicite:0]{index=0}
-- Y. Suma Harshitha – :contentReference[oaicite:1]{index=1}
-- K. Devisri – :contentReference[oaicite:2]{index=2}
-- SK. Shameera – :contentReference[oaicite:3]{index=3}
-
+- **P. Vineetha** - [GitHub](https://github.com/Vineetha-17)
+- **Y. Suma Harshitha** - [GitHub](https://github.com/Suma-1417)
+- **K. Devisri** - [GitHub](https://github.com/Devisri1103)
+- **SK. Shameera** - [GitHub](https://github.com/23501a4455-alt)
 ---
 
 # Project Description
