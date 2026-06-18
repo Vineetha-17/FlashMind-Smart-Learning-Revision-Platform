@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const API = axios.create({
-  baseURL: 'https://flashmind-smart-learning-revision-l07r.onrender.com/',
+  baseURL: 'https://flashmind-smart-learning-revision-l07r.onrender.com/api',
 });
 
 // Request Interceptor: inject token into Authorization header
