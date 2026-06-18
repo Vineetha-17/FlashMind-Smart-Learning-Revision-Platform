@@ -1,6 +1,28 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
+const const mongoose = require('mongoose');
 
-const mongoUri = 'mongodb+srv://myAtlasDBUser:Devi1103@myatlasclusteredu.u9os2kq.mongodb.net/';
+
+const mongoUri = process.env.MONGO_URI;
+
+async function run() {
+  try {
+    console.log('Connecting to MongoDB...');
+    await mongoose.connect(mongoUri);
+    console.log('Connected!');
+
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log('Collections in Database:', collections.map(c => c.name));
+
+  } catch (error) {
+    console.error('Error querying DB:', error);
+  } finally {
+    await mongoose.disconnect();
+    console.log('Disconnected!');
+  }
+}
+
+run();
 
 async function run() {
   try {
