@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 
-const mongoUri = 'mongodb+srv://SumaHarshitha:Suma_1417@mernstackws.lalv9jr.mongodb.net/flashmind';
+const mongoUri = process.env.MONGO_URI;
 const jwtSecret = 'flashmind_jwt_secret_key_1417_harshitha_sumi';
 const baseUrl = 'http://localhost:5000/api';
 
