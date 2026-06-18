@@ -1,6 +1,28 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
+const const mongoose = require('mongoose');
 
-const mongoUri = 'mongodb+srv://SumaHarshitha:Suma_1417@mernstackws.lalv9jr.mongodb.net/flashmind';
+
+const mongoUri = process.env.MONGO_URI;
+
+async function run() {
+  try {
+    console.log('Connecting to MongoDB...');
+    await mongoose.connect(mongoUri);
+    console.log('Connected!');
+
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log('Collections in Database:', collections.map(c => c.name));
+
+  } catch (error) {
+    console.error('Error querying DB:', error);
+  } finally {
+    await mongoose.disconnect();
+    console.log('Disconnected!');
+  }
+}
+
+run();
 
 async function run() {
   try {
