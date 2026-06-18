@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const mongoUri = 'mongodb+srv://SumaHarshitha:Suma_1417@mernstackws.lalv9jr.mongodb.net/flashmind';
+const mongoUri = 'mongodb://localhost:27017/';
 
 async function run() {
   try {
