@@ -17,7 +17,7 @@ connectDB();
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const app = express();
-const NODE_ENV = process.env.NODE_ENV || 'development';
+
 
 // Middlewares
 const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(url => url.trim()) : [];
