@@ -1,4 +1,3 @@
-import React from 'react';
 import { BookOpen, Edit2, Trash2, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

@@ -17,6 +17,7 @@ connectDB();
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const app = express();
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middlewares
 const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(url => url.trim()) : [];
@@ -64,6 +65,11 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL ERROR: JWT_SECRET is not defined.');
+  process.exit(1);
+}
 
 if (!process.env.JWT_SECRET) {
   console.error('FATAL ERROR: JWT_SECRET is not defined.');

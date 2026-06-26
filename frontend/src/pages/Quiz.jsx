@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { subjectService, aiService, quizService } from '../services/api';
-import { 
-  Award, 
-  Brain, 
-  HelpCircle, 
-  Play, 
-  Sparkles, 
-  AlertCircle, 
-  History, 
-  Check, 
-  X, 
+import {
+  Award,
+  Brain,
+  HelpCircle,
+  Play,
+  Sparkles,
+  AlertCircle,
+  History,
+  Check,
+  X,
   ArrowLeft,
   Calendar,
   RotateCcw,
@@ -19,56 +19,40 @@ import {
 
 export default function Quiz() {
   const navigate = useNavigate();
-  
-  // Page modes: 'setup' | 'loading' | 'active' | 'result'
+
   const [mode, setMode] = useState('setup');
-  
-  // Data lists
   const [subjects, setSubjects] = useState([]);
   const [history, setHistory] = useState([]);
-  
-  // Setup selections
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [topic, setTopic] = useState('');
-  
-  // Quiz active states
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState({}); // idx: selectedOptionText
+  const [selectedAnswers, setSelectedAnswers] = useState({});
   const [quizScore, setQuizScore] = useState(0);
   const [xpGained, setXpGained] = useState(0);
   const [userXp, setUserXp] = useState(0);
-  
-  // UI states
   const [subjectsLoading, setSubjectsLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [quizGenerating, setQuizGenerating] = useState(false);
-  const [error, setError] = useState('');
   const [quizError, setQuizError] = useState('');
 
-  // Load subjects and history on mount
-  useEffect(() => {
-    fetchSubjects();
-    fetchHistory();
-  }, []);
-
-  const fetchSubjects = async () => {
+  const fetchSubjects = useCallback(async () => {
     try {
       setSubjectsLoading(true);
       const res = await subjectService.getAll();
       setSubjects(res.data || []);
-      if (res.data && res.data.length > 0) {
+      if (res.data?.length > 0) {
         setSelectedSubjectId(res.data[0]._id);
       }
     } catch (err) {
       console.error('Error fetching subjects:', err);
-      setError('Failed to load subject decks.');
+      setQuizError('Failed to load subject decks.');
     } finally {
       setSubjectsLoading(false);
     }
-  };
+  }, []);
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       setHistoryLoading(true);
       const res = await quizService.getHistory();
@@ -78,7 +62,12 @@ export default function Quiz() {
     } finally {
       setHistoryLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchSubjects();
+    fetchHistory();
+  }, [fetchSubjects, fetchHistory]);
 
   const handleStartQuiz = async (e) => {
     e.preventDefault();
@@ -95,14 +84,14 @@ export default function Quiz() {
       setQuizError('');
       setQuizGenerating(true);
       setMode('loading');
-      
+
       const response = await aiService.generateQuiz({
         subjectId: selectedSubjectId,
         topic: topic.trim()
       });
 
       const generatedQuestions = response.data.quiz;
-      if (generatedQuestions && generatedQuestions.length > 0) {
+      if (generatedQuestions?.length > 0) {
         setQuestions(generatedQuestions);
         setCurrentQuestionIdx(0);
         setSelectedAnswers({});
@@ -120,10 +109,7 @@ export default function Quiz() {
   };
 
   const handleOptionSelect = (option) => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [currentQuestionIdx]: option
-    });
+    setSelectedAnswers((prev) => ({ ...prev, [currentQuestionIdx]: option }));
   };
 
   const handleNextQuestion = () => {
@@ -139,7 +125,6 @@ export default function Quiz() {
   };
 
   const handleSubmitQuiz = async () => {
-    // Calculate Score
     let score = 0;
     questions.forEach((q, idx) => {
       if (selectedAnswers[idx] === q.correctAnswer) {
@@ -155,27 +140,25 @@ export default function Quiz() {
         totalQuestions: questions.length,
         topic: topic.trim()
       };
-      
+
       const res = await quizService.saveScore(payload);
-      
       setQuizScore(score);
       setXpGained(res.data.xpGained || 0);
       setUserXp(res.data.userXp || 0);
-      
-      // Update local storage user profile with latest XP if available
+
       const localUser = JSON.parse(localStorage.getItem('flashmind_user') || '{}');
       if (res.data.userXp) {
         localUser.xp = res.data.userXp;
         localStorage.setItem('flashmind_user', JSON.stringify(localUser));
       }
-      
+
       setMode('result');
-      fetchHistory(); // reload history
+      fetchHistory();
     } catch (err) {
       console.error('Error submitting score:', err);
       setQuizError('Failed to save your score, but here are your results.');
       setQuizScore(score);
-      setXpGained(score * 20); // fallback local calc
+      setXpGained(score * 20);
       setMode('result');
     }
   };
@@ -189,14 +172,8 @@ export default function Quiz() {
     setMode('setup');
   };
 
-  // Helper for progress percentage
-  const progressPercent = questions.length > 0 
-    ? Math.round(((Object.keys(selectedAnswers).length) / questions.length) * 100)
-    : 0;
-
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      {/* Page Title */}
       <div className="flex justify-between items-center mb-8 border-b border-slate-900 pb-5">
         <div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
@@ -218,7 +195,6 @@ export default function Quiz() {
         )}
       </div>
 
-      {/* ERROR MESSAGE BAR */}
       {quizError && (
         <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm mb-6">
           <AlertCircle size={20} className="mt-0.5 shrink-0" />
@@ -229,10 +205,8 @@ export default function Quiz() {
         </div>
       )}
 
-      {/* 1. SETUP MODE */}
       {mode === 'setup' && (
         <div className="grid md:grid-cols-3 gap-8 text-left">
-          {/* Setup Form */}
           <div className="md:col-span-2 space-y-6">
             <div className="glass-panel p-6 rounded-2xl border border-slate-800">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -305,7 +279,6 @@ export default function Quiz() {
             </div>
           </div>
 
-          {/* History Sidebar */}
           <div className="md:col-span-1 space-y-6">
             <div className="glass-panel p-6 rounded-2xl border border-slate-800 h-full flex flex-col">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -354,7 +327,6 @@ export default function Quiz() {
         </div>
       )}
 
-      {/* 2. LOADING STATE */}
       {mode === 'loading' && (
         <div className="glass-panel p-16 rounded-3xl border border-slate-800 text-center space-y-6">
           <div className="relative h-24 w-24 mx-auto flex items-center justify-center">
@@ -370,10 +342,8 @@ export default function Quiz() {
         </div>
       )}
 
-      {/* 3. ACTIVE QUIZ PLAY-MODE */}
       {mode === 'active' && questions.length > 0 && (
         <div className="space-y-6 text-left">
-          {/* Progress and status */}
           <div className="glass-panel p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-sm font-black">
@@ -385,10 +355,9 @@ export default function Quiz() {
               </div>
             </div>
 
-            {/* Progress Bar */}
             <div className="flex items-center gap-3 sm:w-1/2">
               <div className="flex-grow h-2 bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-300"
                   style={{ width: `${((currentQuestionIdx + 1) / questions.length) * 100}%` }}
                 ></div>
@@ -399,13 +368,11 @@ export default function Quiz() {
             </div>
           </div>
 
-          {/* Question Box */}
           <div className="glass-panel p-8 rounded-2xl border border-slate-800 space-y-6">
             <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed">
               {questions[currentQuestionIdx].question}
             </h3>
 
-            {/* Options list */}
             <div className="grid gap-3 pt-2">
               {questions[currentQuestionIdx].options.map((option, oIdx) => {
                 const isSelected = selectedAnswers[currentQuestionIdx] === option;
@@ -413,22 +380,10 @@ export default function Quiz() {
                   <button
                     key={oIdx}
                     onClick={() => handleOptionSelect(option)}
-                    className={`
-                      w-full py-4 px-5 rounded-xl border text-left text-sm font-semibold transition-all duration-200 flex items-center justify-between cursor-pointer
-                      ${isSelected 
-                        ? 'bg-indigo-600/15 border-indigo-500 text-indigo-300 shadow-md shadow-indigo-600/5' 
-                        : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800/40'
-                      }
-                    `}
+                    className={`w-full py-4 px-5 rounded-xl border text-left text-sm font-semibold transition-all duration-200 flex items-center justify-between cursor-pointer ${isSelected ? 'bg-indigo-600/15 border-indigo-500 text-indigo-300 shadow-md shadow-indigo-600/5' : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800/40'}`}
                   >
                     <span>{option}</span>
-                    <div className={`
-                      h-5 w-5 rounded-full border flex items-center justify-center shrink-0 ml-4
-                      ${isSelected 
-                        ? 'border-indigo-400 bg-indigo-500 text-slate-950' 
-                        : 'border-slate-800'
-                      }
-                    `}>
+                    <div className={`h-5 w-5 rounded-full border flex items-center justify-center shrink-0 ml-4 ${isSelected ? 'border-indigo-400 bg-indigo-500 text-slate-950' : 'border-slate-800'}`}>
                       {isSelected && <Check size={12} strokeWidth={3} />}
                     </div>
                   </button>
@@ -437,7 +392,6 @@ export default function Quiz() {
             </div>
           </div>
 
-          {/* Navigation controls */}
           <div className="flex justify-between items-center pt-2">
             <button
               onClick={handlePrevQuestion}
@@ -468,10 +422,8 @@ export default function Quiz() {
         </div>
       )}
 
-      {/* 4. RESULT MODE */}
       {mode === 'result' && (
         <div className="space-y-8 text-left">
-          {/* Header completion card */}
           <div className="glass-panel p-8 rounded-3xl border border-slate-800 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="absolute top-0 right-0 h-40 w-40 bg-emerald-500/5 rounded-bl-full flex items-center justify-center text-emerald-500/20">
               <Award size={96} className="fill-emerald-500/5" />
@@ -483,16 +435,16 @@ export default function Quiz() {
                 <span>Quiz Complete</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-white">
-                {quizScore === questions.length 
-                  ? 'Perfect Score! Exceptional Work!' 
-                  : quizScore >= 3 
-                  ? 'Great Job! Keep Learning!' 
+                {quizScore === questions.length
+                  ? 'Perfect Score! Exceptional Work!'
+                  : quizScore >= 3
+                  ? 'Great Job! Keep Learning!'
                   : 'Good Attempt! Study more and try again!'}
               </h2>
               <p className="text-slate-400 text-sm">
                 You scored <span className="font-bold text-white">{quizScore} out of {questions.length}</span> correct answers on <span className="font-semibold text-slate-200">"{topic}"</span>.
               </p>
-              
+
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
                 <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-extrabold text-sm">
                   +{xpGained} XP Boost
@@ -505,17 +457,9 @@ export default function Quiz() {
               </div>
             </div>
 
-            {/* Visual Ring Score Card */}
             <div className="relative h-36 w-36 flex items-center justify-center shrink-0">
               <svg className="w-full h-full transform -rotate-90">
-                <circle
-                  cx="72"
-                  cy="72"
-                  r="58"
-                  className="stroke-slate-900"
-                  strokeWidth="10"
-                  fill="transparent"
-                />
+                <circle cx="72" cy="72" r="58" className="stroke-slate-900" strokeWidth="10" fill="transparent" />
                 <circle
                   cx="72"
                   cy="72"
@@ -535,7 +479,6 @@ export default function Quiz() {
             </div>
           </div>
 
-          {/* Action buttons */}
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
             <button
               onClick={handleReset}
@@ -553,30 +496,23 @@ export default function Quiz() {
             </button>
           </div>
 
-          {/* Detailed Question Review List */}
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white">Review Questions</h3>
             <div className="space-y-4">
               {questions.map((q, idx) => {
                 const userSelection = selectedAnswers[idx];
                 const isCorrect = userSelection === q.correctAnswer;
-                
+
                 return (
-                  <div 
+                  <div
                     key={idx}
-                    className={`
-                      glass-panel p-6 rounded-2xl border transition-colors
-                      ${isCorrect ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-rose-500/20 bg-rose-500/5'}
-                    `}
+                    className={`glass-panel p-6 rounded-2xl border transition-colors ${isCorrect ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-rose-500/20 bg-rose-500/5'}`}
                   >
                     <div className="flex items-start gap-3 justify-between">
                       <h4 className="text-sm sm:text-base font-bold text-white leading-relaxed">
                         Q{idx + 1}: {q.question}
                       </h4>
-                      <div className={`
-                        h-6 w-6 rounded-full flex items-center justify-center shrink-0 ml-4
-                        ${isCorrect ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}
-                      `}>
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center shrink-0 ml-4 ${isCorrect ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
                         {isCorrect ? <Check size={14} strokeWidth={3} /> : <X size={14} strokeWidth={3} />}
                       </div>
                     </div>
@@ -585,7 +521,7 @@ export default function Quiz() {
                       {q.options.map((opt, oIdx) => {
                         const optIsSelected = userSelection === opt;
                         const optIsCorrect = q.correctAnswer === opt;
-                        
+
                         let optionStyle = 'border-slate-800 bg-slate-900/30 text-slate-400';
                         if (optIsCorrect) {
                           optionStyle = 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
@@ -594,10 +530,7 @@ export default function Quiz() {
                         }
 
                         return (
-                          <div
-                            key={oIdx}
-                            className={`p-3 rounded-lg border flex items-center justify-between ${optionStyle}`}
-                          >
+                          <div key={oIdx} className={`p-3 rounded-lg border flex items-center justify-between ${optionStyle}`}>
                             <span>{opt}</span>
                             {optIsCorrect && (
                               <span className="text-[10px] uppercase font-bold text-emerald-400">Correct Answer</span>

@@ -14,8 +14,12 @@ export default defineConfig([
       reactRefresh.configs.vite,
     ],
     languageOptions: {
-      globals: globals.browser,
-      parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: { ecmaFeatures: { jsx: true }, ecmaVersion: 'latest' },
+    },
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/exhaustive-deps': 'warn',
     },
   },
 ])

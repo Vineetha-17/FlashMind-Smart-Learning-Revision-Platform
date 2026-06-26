@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { dashboardService } from '../services/api';
 import { Award, Shield } from 'lucide-react';
@@ -71,7 +71,7 @@ export default function Profile() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning, mode]);
+  }, [isRunning, mode, BREAK_DURATION, WORK_DURATION]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -103,7 +103,7 @@ export default function Profile() {
   const user = data?.user || {};
   const stats = data?.stats || {};
   const badgeLabel = getBadgeLabel(user.xp);
-  const badgeTier = getBadgeTier(user.xp);
+  getBadgeTier(user.xp);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">

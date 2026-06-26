@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { subjectService, dashboardService } from '../services/api';
 import SubjectCard from '../components/SubjectCard';
 import { 
-  Plus, 
-  BookOpen, 
-  AlertCircle, 
-  HelpCircle, 
-  Check, 
-  X, 
-  Sparkles,
+  Plus,
+  AlertCircle,
+  X,
   PlusCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -26,7 +22,7 @@ export default function Subjects() {
   const [formError, setFormError] = useState('');
   const [formLoading, setFormLoading] = useState(false);
 
-  const fetchSubjects = async () => {
+  const fetchSubjects = useCallback(async () => {
     try {
       setError('');
       // Get subject progress details which contains counts and memory score
@@ -38,11 +34,11 @@ export default function Subjects() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchSubjects();
-  }, []);
+  }, [fetchSubjects]);
 
   const handleOpenCreate = () => {
     setEditingSubject(null);

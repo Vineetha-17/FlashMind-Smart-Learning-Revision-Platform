@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RefreshCw, Check, AlertTriangle, Edit3, Trash2 } from 'lucide-react';
 
 export default function FlashcardCard({ 

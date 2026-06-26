@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { subjectService, flashcardService, aiService } from '../services/api';
 import { 
   Sparkles, 
-  BookOpen, 
   FileText, 
   Plus, 
   Check, 
   AlertCircle, 
-  Upload,
-  ArrowRight,
-  Brain
+  Upload
 } from 'lucide-react';
 
 export default function CreateCards() {

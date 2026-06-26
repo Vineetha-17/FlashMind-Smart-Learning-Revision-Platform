@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { BrainCircuit, Activity, Zap, Flame, ShieldAlert, Sparkles, BookOpen } from 'lucide-react';
 

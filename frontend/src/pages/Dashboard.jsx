@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { dashboardService, subjectService } from '../services/api';
 import SubjectCard from '../components/SubjectCard';
 import { 
@@ -11,7 +11,6 @@ import {
   HelpCircle,
   X,
   AlertCircle,
-  Edit2
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -293,7 +292,6 @@ export default function Dashboard() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {data?.subjectProgress?.map((prog) => {
-            const subjObj = data.subjectProgress.find(s => s.subjectId === prog.subjectId);
             const rawSubj = {
               _id: prog.subjectId,
               subjectName: prog.subjectName,

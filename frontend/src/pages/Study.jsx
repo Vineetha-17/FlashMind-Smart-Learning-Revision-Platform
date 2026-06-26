@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { subjectService, flashcardService } from '../services/api';
 import FlashcardCard from '../components/FlashcardCard';
@@ -6,16 +6,13 @@ import {
   BookOpen, 
   Search, 
   SlidersHorizontal, 
-  Sparkles, 
   Plus, 
   Award,
   AlertCircle,
-  HelpCircle,
   CheckCircle,
   X,
   ChevronLeft,
-  ChevronRight,
-  Flame
+  ChevronRight
 } from 'lucide-react';
 
 export default function Study() {
@@ -51,8 +48,7 @@ export default function Study() {
       try {
         const response = await subjectService.getAll();
         setSubjects(response.data);
-        
-        // If query subjectId matches, set it, otherwise select first subject
+
         if (initialSubjectId) {
           setSelectedSubjectId(initialSubjectId);
         } else if (response.data.length > 0) {
@@ -66,8 +62,7 @@ export default function Study() {
     fetchSubjects();
   }, [initialSubjectId]);
 
-  // Fetch flashcards when selectedSubjectId changes
-  const fetchFlashcards = async () => {
+  const fetchFlashcards = useCallback(async () => {
     if (!selectedSubjectId) {
       setLoading(false);
       return;
@@ -84,11 +79,11 @@ export default function Study() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedSubjectId]);
 
   useEffect(() => {
     fetchFlashcards();
-  }, [selectedSubjectId]);
+  }, [fetchFlashcards]);
 
   // Handle flashcard review rating (spaced repetition API)
   const handleReview = async (cardId, rating) => {

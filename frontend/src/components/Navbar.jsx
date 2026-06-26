@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import { 
@@ -11,7 +11,6 @@ import {
   Shield, 
   Menu, 
   X,
-  User as UserIcon,
   Folders,
   GraduationCap,
   HelpCircle,
@@ -62,9 +61,7 @@ export default function Navbar({ theme = 'dark', toggleTheme }) {
   };
 
   useEffect(() => {
-    if (profileOpen) {
-      setProfileOpen(false);
-    }
+    setProfileOpen((prev) => (prev ? false : prev));
   }, [location.pathname]);
 
   const linkClass = (path) => `

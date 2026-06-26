@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { subjectService, flashcardService } from '../services/api';
 import { 
-  BookOpen, 
-  Search, 
-  Plus, 
-  AlertCircle, 
+  Search,
+  AlertCircle,
   CheckCircle,
+  GraduationCap,
+  HelpCircle,
+  Plus,
   ChevronLeft,
   ChevronRight,
-  Globe,
-  GraduationCap,
   Sparkles,
-  HelpCircle
+  Globe,
+  BookOpen
 } from 'lucide-react';
 
 export default function StudyMode() {
@@ -50,7 +50,7 @@ export default function StudyMode() {
   }, [initialSubjectId]);
 
   // Fetch flashcards for selected subject
-  const fetchFlashcards = async () => {
+  const fetchFlashcards = useCallback(async () => {
     if (!selectedSubjectId) {
       setLoading(false);
       return;
@@ -67,11 +67,11 @@ export default function StudyMode() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedSubjectId]);
 
   useEffect(() => {
     fetchFlashcards();
-  }, [selectedSubjectId]);
+  }, [fetchFlashcards]);
 
   // Filter cards by search query
   const filteredCards = flashcards.filter((card) => {

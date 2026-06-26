@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { adminService } from '../services/api';
 import { 
   ShieldAlert, 
   Users, 
   BookOpen, 
-  Award, 
   Trash2, 
   AlertCircle,
-  TrendingUp,
-  BrainCircuit,
-  X
+  BrainCircuit
 } from 'lucide-react';
 
 export default function AdminDashboard() {
