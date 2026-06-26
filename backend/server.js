@@ -15,11 +15,24 @@ const quizRoutes = require('./routes/quizRoutes');
 // Connect to Database
 connectDB();
 
+const NODE_ENV = process.env.NODE_ENV || 'development';
 const app = express();
 
 // Middlewares
+const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(url => url.trim()) : [];
+if (NODE_ENV === 'production' && allowedOrigins.length === 0) {
+  console.error('FATAL ERROR: CLIENT_URL must be defined in production to restrict allowed origins.');
+  process.exit(1);
+}
+
 app.use(cors({
-  origin: '*', // For development, allow all origins. Can be restricted to React client port in production.
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy: Origin not allowed.'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -50,9 +63,15 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL ERROR: JWT_SECRET is not defined.');
+  process.exit(1);
+}
 
 app.listen(PORT, () => {
-  console.log(`Server running in development mode on port ${PORT}`);
+  console.log(`Server running in ${NODE_ENV} mode on port ${PORT}`);
 });
 
 

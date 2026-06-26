@@ -97,6 +97,28 @@ Ensure relevant, educational, and secure content generation.
 - Vercel
 - Render
 
+## Environment Variables
+
+Use environment variables in deployment instead of committing secrets.
+
+Backend variables (Render or other host):
+- `MONGO_URI` — MongoDB Atlas connection string
+- `JWT_SECRET` — strong JWT signing secret
+- `GEMINI_API_KEY` — Gemini API key (optional)
+- `CLIENT_URL` — frontend URL for CORS and email links
+- `EMAIL_USER` — transactional email account username
+- `EMAIL_PASS` — transactional email account password or app password
+- `PORT` — backend port (Render sets this automatically)
+
+Frontend variables (Vercel):
+- `VITE_API_URL` — backend URL without trailing slash, for example `https://your-backend.onrender.com/api`
+
+### Deployment Notes
+
+- Backend: deploy the `backend/` folder with `npm install` and `npm start`.
+- Frontend: deploy the `frontend/` folder with `npm install` and `npm run build`.
+- Keep `.env` files private and use the platform environment variable settings.
+
 ## Version Control
 - GitHub
 

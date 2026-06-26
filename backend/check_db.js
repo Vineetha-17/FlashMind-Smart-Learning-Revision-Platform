@@ -1,30 +1,14 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
-const mongoose = require('mongoose');
-
 
 const mongoUri = process.env.MONGO_URI;
 
 async function run() {
-  try {
-    console.log('Connecting to MongoDB...');
-    await mongoose.connect(mongoUri);
-    console.log('Connected!');
-
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Collections in Database:', collections.map(c => c.name));
-
-  } catch (error) {
-    console.error('Error querying DB:', error);
-  } finally {
-    await mongoose.disconnect();
-    console.log('Disconnected!');
+  if (!mongoUri) {
+    console.error('MONGO_URI is not configured. Please set it in your .env file.');
+    process.exit(1);
   }
-}
 
-run();
-
-async function run() {
   try {
     console.log('Connecting to MongoDB...');
     await mongoose.connect(mongoUri);

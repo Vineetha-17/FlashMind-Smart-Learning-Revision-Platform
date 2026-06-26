@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+const apiBaseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : 'http://localhost:5000/api';
 export const API = axios.create({
-  baseURL: 'https://flashmind-smart-learning-revision-l07r.onrender.com/',
+  baseURL: apiBaseUrl,
 });
 
 // Request Interceptor: inject token into Authorization header
@@ -26,10 +27,13 @@ API.interceptors.response.use(
       // Clear invalid session data
       localStorage.removeItem('flashmind_token');
       localStorage.removeItem('flashmind_user');
-      
+
+      const currentRoute = window.location.hash.replace(/^#/, '') || '/';
+      const isAuthRoute = currentRoute.includes('/login') || currentRoute.includes('/register') || currentRoute === '/';
+
       // If we are not already on login or landing, redirect
-      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register') && window.location.pathname !== '/') {
-        window.location.href = '/login?expired=true';
+      if (!isAuthRoute) {
+        window.location.hash = '#/login?expired=true';
       }
     }
     return Promise.reject(error);

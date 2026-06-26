@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting…</title>
+    <script>
+      const segmentCount = window.location.pathname.split('/').length - 1;
+      const repoName = window.location.pathname.split('/')[1];
+      const redirectPath = window.location.pathname.replace(`/${repoName}`, '') || '/';
+      window.location.replace(`/${repoName}/#${redirectPath}${window.location.search}${window.location.hash}`);
+    </script>
+  </head>
+  <body></body>
+</html>

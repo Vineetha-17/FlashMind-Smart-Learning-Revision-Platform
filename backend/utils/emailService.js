@@ -78,7 +78,7 @@ const sendDailyReminderEmail = async (email, name, dueCount, weakTopic, streak) 
       </div>
 
       <p style="font-size: 15px; font-weight: bold; text-align: center; margin: 25px 0;">
-        <a href="http://localhost:5173/dashboard" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">
+        <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">
           Start Reviewing Now
         </a>
       </p>
